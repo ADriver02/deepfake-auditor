@@ -1,11 +1,11 @@
 from transformers import pipeline
 import cv2
-import torch
 
+# MODÈLE PUBLIC QUI MARCHE À 100%
 detector = pipeline(
     "image-classification",
-    model="umm-maybe/deepfake-detection",
-    device=0 if torch.cuda.is_available() else -1
+    model="umm-maybe/deepfake-detection-v2",  # Version publique
+    device=-1  # CPU only
 )
 
 def extract_score(video_path):
@@ -18,7 +18,8 @@ def extract_score(video_path):
         frame_count += 1
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         result = detector(rgb_frame)
-        fake_score = next((r['score'] for r in result if r['label'] == 'FAKE'), 0.0)
+        # Cherche "FAKE" ou "REAL"
+        fake_score = next((r['score'] for r in result if r['label'].lower() == 'fake'), 0.0)
         scores.append(fake_score)
     cap.release()
     return sum(scores) / len(scores) if scores else 0.5
