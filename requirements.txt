@@ -1,0 +1,6 @@
+streamlit
+transformers
+torch
+opencv-python
+requests
+python-dotenv
